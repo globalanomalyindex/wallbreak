@@ -1,43 +1,32 @@
-# wallbreak — site
+# wallbreak
 
-The landing page and case study for **wallbreak**, a read-only tool that finds public
-GitHub repositories containing copies of your fonts. Built from a Figma design by
-Christopher Robin Fiore, set in **SLTF Dessign Maison** (SilverStag Type Foundry).
+the landing page, case study, and in-browser scanner for wallbreak, a read-only
+cybersecurity tool that checks whether your paywalled fonts are exposed on public
+github. set in sltf dessign maison (silverstag type foundry). static, no build step.
 
-Static, no build step.
+## what's here
 
-## Structure
-
-- `index.html` — the hero landing page
-- `case-study.html` — the wallbreak case study
-- `styles.css` — shared styles, tokens, motion
-- `app.html` / `app.js` / `app.css` — the in-browser scanner
-- `vendor/opentype.min.js` — font parser used by the scanner
-- `fonts/` — self-hosted SLTF Dessign Maison (woff2 / woff only; the raw .otf source is intentionally not published)
+- `index.html` the hero
+- `app.html`, `app.js`, `app.css` the scanner. it reads a font locally, fingerprints it
+  (name table plus a sha-256), searches github code search with your token, pulls down
+  each candidate, and grades it weak, strong, or proven
+- `case-study.html` the writeup
+- `styles.css` shared tokens, type, and motion
+- `vendor/opentype.min.js` the font parser the scanner uses
+- `fonts/` the self-hosted font, web formats only (woff2, woff). the raw .otf source is
+  kept out of this repo on purpose
 - `favicon.svg`
 
-## Run locally
+## run it
 
-```bash
-cd wallbreak-site
-python3 -m http.server 8000
-# open http://localhost:8000
-```
+serve over http (not file://) so the web font loads:
 
-(Serve over HTTP, not `file://`, so the preloaded web font loads cleanly.)
+    python3 -m http.server 8000
 
-## Deploy on GitHub Pages
+then open localhost:8000. the scanner needs a github token, which stays in your browser,
+to run a live search.
 
-1. Push this folder to a GitHub repo.
-2. Settings → Pages → deploy from branch → `main` / root.
-3. `.nojekyll` is included so Pages serves every file as-is. All paths are relative,
-   so it works from a project subpath too.
+## deploy
 
-## Notes
-
-- The font is self-hosted and converted to woff2/woff for the web. Only the web formats
-  are published; the raw `.otf` source is deliberately kept out of this public repo.
-- Designed and built by **Christopher Robin Fiore** ([@globalanomalyindex](https://github.com/globalanomalyindex)).
-- The wordmark uses the font's OpenType stylistic sets: `ss02` across the word, `ss01`
-  on "break" (with ligatures off), matching the Figma source.
-- "other projects :>" links to https://github.com/globalanomalyindex.
+static site, relative paths, and a `.nojekyll` file, so it drops onto github pages from
+the main branch root as-is.
