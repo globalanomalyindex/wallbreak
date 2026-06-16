@@ -3,6 +3,9 @@
 the landing page, case study, and in-browser scanner for **wallbreak**, a read-only
 cybersecurity tool that checks whether your paywalled fonts are exposed on public
 github.
+
+live: https://globalanomalyindex.github.io/wallbreak/
+
 ## what's here
 
 - `index.html` the hero
