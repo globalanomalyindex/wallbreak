@@ -1,9 +1,8 @@
 # wallbreak
 
-the landing page, case study, and in-browser scanner for wallbreak, a read-only
+the landing page, case study, and in-browser scanner for **wallbreak**, a read-only
 cybersecurity tool that checks whether your paywalled fonts are exposed on public
-github. set in sltf dessign maison (silverstag type foundry). static, no build step.
-
+github.
 ## what's here
 
 - `index.html` the hero
