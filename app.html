@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>wallbreak — scan</title>
+    <meta
+      name="description"
+      content="Run wallbreak: check whether your paywalled fonts are exposed in public GitHub repositories. Read-only, runs entirely in your browser."
+    />
+    <meta name="author" content="Christopher Robin Fiore (globalanomalyindex)" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="fonts/SLTFDessignMaison-Regular.woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="app.css" />
+    <meta name="theme-color" content="#b2c4c8" />
+  </head>
+  <body class="app">
+    <header class="app-bar">
+      <a class="link" href="index.html"
+        ><span class="arrow back" aria-hidden="true">←</span> wallbreak</a
+      >
+      <a class="link" href="case-study.html"
+        >case study <span class="arrow" aria-hidden="true">→</span></a
+      >
+    </header>
+
+    <main class="app-main">
+      <h1 class="wordmark" aria-label="wallbreak">
+        <span class="wm-wall" aria-hidden="true">wall</span><span
+          class="wm-break"
+          aria-hidden="true"
+          >break</span
+        >
+      </h1>
+      <p class="app-tagline">
+        check if your paywalled fonts are exposed on public github.
+      </p>
+
+      <form id="scan-form" class="scanner" novalidate>
+        <div class="field">
+          <label id="fonts-label">your fonts</label>
+          <div id="drop" class="dropzone" role="group" aria-labelledby="fonts-label">
+            <input
+              id="files"
+              type="file"
+              accept=".otf,.ttf,.woff,.woff2"
+              multiple
+              hidden
+            />
+            <p>
+              drop your font files here, or
+              <button type="button" id="browse" class="linklike">browse</button>
+            </p>
+            <p class="hint">
+              .otf .ttf .woff .woff2 — read locally, never uploaded anywhere
+            </p>
+          </div>
+          <ul id="font-list" class="font-list" aria-live="polite"></ul>
+        </div>
+
+        <div class="field">
+          <label for="token">github token</label>
+          <input
+            id="token"
+            type="password"
+            placeholder="ghp_… stays in this browser"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <p class="hint">
+            code search needs an authenticated request. a token with no scopes is
+            enough for public search.
+            <a
+              class="link"
+              href="https://github.com/settings/tokens"
+              target="_blank"
+              rel="noopener noreferrer"
+              >make one <span class="arrow" aria-hidden="true">→</span></a
+            >
+          </p>
+        </div>
+
+        <button id="scan" type="submit" class="scan-btn">
+          <span>scan</span><span class="arrow" aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <section id="status" class="status" hidden></section>
+      <section id="results" class="results" aria-live="polite"></section>
+
+      <p class="trace-note">
+        wallbreak only ever reads: github code search, repo metadata, and file
+        contents. it never stars, forks, clones, opens issues, or contacts
+        anyone, so the scan leaves no trace on the repos it checks. your token and
+        your fonts never leave this browser.
+      </p>
+    </main>
+
+    <script src="vendor/opentype.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

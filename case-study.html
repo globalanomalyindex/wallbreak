@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>wallbreak — case study</title>
+    <meta
+      name="description"
+      content="how wallbreak checks whether your paywalled fonts are exposed on public github, as read-only reconnaissance that leaves no trace. a case study by christopher robin fiore."
+    />
+    <meta name="author" content="Christopher Robin Fiore (globalanomalyindex)" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="fonts/SLTFDessignMaison-Regular.woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <meta name="theme-color" content="#b2c4c8" />
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body class="study">
+    <div class="page">
+      <nav class="topbar">
+        <a class="link" href="index.html"
+          ><span class="arrow back" aria-hidden="true">←</span> wallbreak</a
+        >
+        <a
+          class="link"
+          href="https://github.com/globalanomalyindex"
+          target="_blank"
+          rel="noopener noreferrer"
+          >other projects :&gt;</a
+        >
+      </nav>
+
+      <header class="study-head">
+        <p class="kicker reveal d1">case study · security tooling</p>
+        <h1 class="wordmark reveal d2" aria-label="wallbreak">
+          <span class="wm-wall" aria-hidden="true">wall</span><span
+            class="wm-break"
+            aria-hidden="true"
+            >break</span
+          >
+        </h1>
+        <p class="lead reveal d3">
+          a cybersecurity tool that checks whether your paywalled fonts have
+          leaked onto public github. it works like quiet reconnaissance:
+          read-only, no clones, no stars, nothing that pings the repo. just a map
+          of where your licensed type is exposed.
+        </p>
+      </header>
+
+      <section class="io">
+        <h2 class="alt1">the problem</h2>
+        <p>
+          you pay for a font, or you draw one yourself, and then it leaks.
+          someone commits the <code>.otf</code> straight into a public repo, or
+          re-exports it to <code>.woff2</code> for a landing page, and now a
+          paywalled typeface is sitting in <code>assets/fonts/</code> with no
+          license and no credit.
+        </p>
+        <p>
+          finding it is the hard part, and the search itself is the risk. clone a
+          repo to inspect it and you bump its traffic graph. star, fork, or open
+          an issue and the owner gets pinged. most recon leaves fingerprints, so
+          you end up announcing the investigation you wanted to run quietly.
+        </p>
+      </section>
+
+      <section class="io">
+        <h2 class="alt2">what it actually does</h2>
+        <p>
+          point wallbreak at a folder of your own fonts. it fingerprints each
+          one, searches github for matching files, pulls down each candidate, and
+          grades how sure it is. the fingerprint is three things:
+        </p>
+        <ul class="feature-list">
+          <li>
+            <span class="tag">name table</span>
+            <span>the family, designer, and copyright baked into the font</span>
+          </li>
+          <li>
+            <span class="tag">hash</span>
+            <span>a sha-256 of the raw bytes, for exact-copy detection</span>
+          </li>
+          <li>
+            <span class="tag">filenames</span>
+            <span>the names the font tends to ship under</span>
+          </li>
+        </ul>
+        <p>
+          out comes a report: repo, stars, license, path, and the exact evidence
+          that tripped each match. the same thing in json if you want to pipe it
+          somewhere.
+        </p>
+      </section>
+
+      <section class="io">
+        <h2 class="alt1">the recon discipline: no trace</h2>
+        <p class="pull">
+          not every way of looking at a repo is equal. some reads are invisible,
+          one bumps a counter, and a few notify the owner.
+        </p>
+        <p>
+          so wallbreak sticks to the three reads github shows nobody, and refuses
+          everything else.
+        </p>
+        <ul class="feature-list">
+          <li>
+            <span class="tag">code search</span>
+            <span>finds candidate files by name and path</span>
+          </li>
+          <li>
+            <span class="tag">repo metadata</span>
+            <span>stars and license, for context on each hit</span>
+          </li>
+          <li>
+            <span class="tag">file contents</span>
+            <span>the bytes, fetched to verify a match locally</span>
+          </li>
+        </ul>
+        <ul class="feature-list no">
+          <li>
+            <span class="tag">clone</span>
+            <span>would tick the repo's traffic graph</span>
+          </li>
+          <li>
+            <span class="tag">star, fork, follow</span>
+            <span>would notify the owner instantly</span>
+          </li>
+          <li>
+            <span class="tag">issues, prs, comments</span>
+            <span>would announce you outright</span>
+          </li>
+        </ul>
+        <p>
+          that rule isn't a line in a readme. it's a single network chokepoint
+          that refuses any request not on the allowlist, checked all the way down
+          to the url path, with a guard that parses the source tree so nothing can
+          smuggle a <code>git clone</code> out through a subprocess. of the 128
+          tests, a good chunk exist only to try to break that promise.
+        </p>
+      </section>
+
+      <section class="io">
+        <h2 class="alt2">confidence, not accusations</h2>
+        <ul class="feature-list">
+          <li>
+            <span class="tag">weak</span>
+            <span>the filename or path lines up. a lead, nothing more.</span>
+          </li>
+          <li>
+            <span class="tag">strong</span>
+            <span
+              >the copyright or unique id baked into the font matches. survives a
+              rename or a re-export.</span
+            >
+          </li>
+          <li>
+            <span class="tag">proven</span>
+            <span>a byte-for-byte sha-256 match. a literal copy.</span>
+          </li>
+        </ul>
+        <p>
+          every hit shows the repo's license right next to it, because a copy
+          isn't automatically a crime. maybe they actually <strong>bought</strong>
+          it. the tool surfaces candidates with evidence and lets a human make the
+          call. it never says "this is piracy."
+        </p>
+      </section>
+
+      <section class="io">
+        <h2 class="alt1">how it got built</h2>
+        <p>
+          full disclosure: i didn't hand-type all of it. wallbreak was built by a
+          small crew of models running as a workflow. one directing, a panel of
+          them designing the plan, two more grinding through 19 test-driven tasks,
+          with every task passing a spec review and a code-quality review before it
+          counted.
+        </p>
+        <p>
+          the real job was directing: setting the constraints (the no-trace rule
+          up there), catching a couple of bugs the plan itself shipped with, and
+          stepping in by hand when the api fell over mid-build. taste and judgment
+          on top, horsepower underneath. that's the job now.
+        </p>
+      </section>
+
+      <section class="io">
+        <h2 class="alt2">the stack</h2>
+        <dl class="spec">
+          <dt>language</dt>
+          <dd>python</dd>
+          <dt>fonts</dt>
+          <dd>fonttools + brotli</dd>
+          <dt>network</dt>
+          <dd>httpx, behind one least-privilege client</dd>
+          <dt>cli</dt>
+          <dd>typer + rich</dd>
+          <dt>tests</dt>
+          <dd>128, pytest, zero live calls</dd>
+          <dt>footprint</dt>
+          <dd>read-only, no writes to any scanned repo</dd>
+        </dl>
+      </section>
+
+      <footer class="study-foot">
+        <a class="link" href="index.html"
+          ><span class="arrow back" aria-hidden="true">←</span> back to
+          wallbreak</a
+        >
+        <a
+          class="link"
+          href="https://github.com/globalanomalyindex"
+          target="_blank"
+          rel="noopener noreferrer"
+          >other projects :&gt;</a
+        >
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        var els = document.querySelectorAll(".io");
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!("IntersectionObserver" in window) || reduce) {
+          els.forEach(function (el) { el.classList.add("in"); });
+          return;
+        }
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (e) {
+              if (e.isIntersecting) {
+                e.target.classList.add("in");
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+        );
+        els.forEach(function (el) { io.observe(el); });
+      })();
+    </script>
+  </body>
+</html>
