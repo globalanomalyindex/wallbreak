@@ -3,6 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      /* mark that the wall-smash intro will play (so the hero is held pre-paint),
+         but only when motion is allowed and the Web Animations API exists. */
+      (function () {
+        try {
+          var ok = !window.matchMedia || !matchMedia("(prefers-reduced-motion: reduce)").matches;
+          if (ok && "animate" in document.createElement("div")) {
+            document.documentElement.classList.add("smash-intro");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <title>wallbreak — copyrighted font tracker</title>
     <meta
       name="description"
@@ -61,5 +73,7 @@
         >
       </div>
     </footer>
+
+    <script src="intro.js" defer></script>
   </body>
 </html>

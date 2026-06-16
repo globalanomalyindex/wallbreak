@@ -251,6 +251,41 @@ body.home {
 .reveal.d3 { animation-delay: 320ms; }
 .reveal.d4 { animation-delay: 440ms; }
 
+/* ---------- the wall-smash intro (home) ----------
+   when JS will play the smash, hold the hero hidden (intro.js reveals it through the
+   breach). a pure-CSS failsafe un-hides it if intro.js never runs. */
+html.smash-intro .stage > *,
+html.smash-intro .footer {
+  opacity: 0;
+  animation: smash-failsafe 600ms 2400ms var(--ease-out) forwards;
+}
+@keyframes smash-failsafe {
+  to { opacity: 1; }
+}
+
+.smash-stage {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+.smash-stage svg {
+  position: absolute;
+  width: min(700px, 92vw);
+  height: auto;
+  overflow: visible;
+}
+.smash-brick {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smash-stage { display: none !important; }
+  html.smash-intro .stage > *,
+  html.smash-intro .footer { animation: none; opacity: 1; }
+}
+
 /* ---------- case study ---------- */
 
 body.study {
